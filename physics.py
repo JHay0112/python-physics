@@ -60,48 +60,9 @@ class Vector:
         result_y = self_y + add_y
         
         # Assign converted to polar values to own
-        self.argument, self.magnitude = xy_to_polar(result_x, result_y)    
+        self.argument, self.magnitude = xy_to_polar(result_x, result_y)
 
 '''
-# The environment in which all the physics objects are held
-class PhysicsEnvironment:
-
-    gravity = Vector(-10, 90) # Gravity vector, same as earth's
-    forces = [gravity] # List of force vectors
-    objects = [] # Store objects inside environement
-    phys_time = 0 # Store how long the physics simulation has been running
-
-    # Run physics simulation
-    # increment (int) - incrememnt in seconds for running the simulation
-    def simulate(self, increment):
-
-        run_simulation = True # Flag for the loop
-
-        while(run_simulation):
-
-            run_start = time() # Get time for when running started
-
-            # For every object in our environment
-            for o in self.objects:
-                
-                o.set_time(self.phys_time) # set the object time to be the same as simulation time
-                o.update() # Update our object
-                self.check_for_collisions()
-                o.info() # Display info of the object
-
-            self.phys_time += increment # Increment the environments by the set increment
-
-            run_end = time() # Get time for when running ended
-
-            runtime = run_end - run_start # Calculate how long the set of code took to run
-
-            sleep(increment - runtime) # Sleep for the increment time minus how long the previous code took to run
-
-    # Check for collisions between objects
-    def check_for_collisions(self):
-
-        pass
-
 # Stores an object that has physics applied to it
 class PhysicsObject:
 
@@ -243,6 +204,7 @@ class PhysicsObject:
 
         collision_object.init_velocity = result
         collision_object.init_time = collision_object.time
+'''
 
 # -- Functions --
 
@@ -259,7 +221,6 @@ def velocity_equation(init_vel, accel, time):
     vel = init_vel + (accel * time)
 
     return(vel)
-
 
 # Convert x and y magnitudes to polar values
 def xy_to_polar(x, y):
@@ -282,11 +243,8 @@ def xy_to_polar(x, y):
 
 # -- Variables --
 
-wind_vector = Vector(7, 180) # Example additional force vector
-environment = PhysicsEnvironment() # Initialise the physics environment
+physics_objects = [] # List of all physics objects
 
 # -- Main --
 
-PhysicsObject("Ball", environment, 1, Vector(50, 45), [0, 0]) # Create a new physics object
 
-environment.simulate(1) # Begin simulation with updates every 1 second'''
