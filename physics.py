@@ -19,50 +19,50 @@ import copy # For copying lists
 # Vectors for vector maths
 class Vector:
 
-    # Init
-    # magnitude (int) - The magnitude of the vector
-    # argument (int) - The angle of the vector from horizontal
-    def __init__(self, magnitude, argument):
+    # Initialise empty polar form vector
+    magnitude = 0
+    argument = 0
 
-        # Assign paramaters to the object attributes
+    # Generate vector from x and y magnitudes
+    def from_xy(self, x, y):
+
+        # Set input to object vars after xy to polar conversion
+        self.magnitude, self.argument = xy_to_polar(x, y)
+            
+    # Generate vector from polar description
+    def from_polar(self, magnitude, argument):
+
+        # Set the input to object vars
         self.magnitude = magnitude
         self.argument = argument
 
-    # Print out information about the vector
-    def info(self):
-
-        print(f"Magnitude: {self.magnitude}, Argument: {self.argument}")
-
-    # Return the x and y sub-vectors as a tuple
+    # Convert polar form to x,y form and return
     def return_xy(self):
 
-        argument = math.radians(self.argument) # Make a copy of our argument in radians for math.sin and math.cos
+        x = 0 # Store x magnitude to return
+        y = 0 # Store y magnitude to return
 
-        # Calculate the magnitudes of the x and y vectors (using SOHCAHTOA) and create new vector objects
-        x = Vector(self.magnitude * math.cos(argument), 0)
-        y = Vector(self.magnitude * math.sin(argument), 90)
+        # Calculate the magnitudes of our x and y vectors using trigonometric functions
+        x = magnitude * math.cos(argument)
+        y = magnitude * math.sin(argument)
 
-        return(x, y) # return x, y as a tuple
+        return(x, y)
 
-    # Add another vector to our vector
-    def add(self, add_vector):
+    # Add another vector object to our vector object
+    def add_vector(self, add_vector):
 
-        self_x, self_y = self.return_xy() # Get x and y vectors from our vector
-        add_x, add_y = add_vector.return_xy() # Get x and y vectors from vector to be added
+        # Get the x and y values of original vector and additional vector
+        self_x, self_y = self.return_xy()
+        add_x, add_y = add_vector.return_xy()
 
-        x = self_x.magnitude + add_x.magnitude # Add x magnitudes
-        y = self_y.magnitude + add_y.magnitude # Add y magnitudes
+        # Add x and y values together
+        result_x = self_x + add_x
+        result_y = self_y + add_y
+        
+        # Assign converted to polar values to own
+        self.argument, self.magnitude = xy_to_polar(result_x, result_y)    
 
-        # Calculate magnitude for new vector using pythag thereom
-        magnitude = math.sqrt((x ** 2) + (y ** 2))
-
-        # Calculate argument using x and y vectors using SOHCAHTOA
-        argument = math.degrees(math.asin(y/magnitude))
-
-        # Update our magnitdue and argument with the new ones
-        self.magnitude = magnitude
-        self.argument = argument
-
+'''
 # The environment in which all the physics objects are held
 class PhysicsEnvironment:
 
@@ -260,6 +260,26 @@ def velocity_equation(init_vel, accel, time):
 
     return(vel)
 
+
+# Convert x and y magnitudes to polar values
+def xy_to_polar(x, y):
+
+    magnitude = 0 # Store magnitude to return
+    argument = 0 # Store argument to return
+
+    # Get the magnitude of the resultant vector using pythagorean theorom
+    magnitude = math.sqrt((x ** 2) + (y ** 2))
+
+    # Check that y is not zero else an error will be produced if we try and run trigonometric function
+    if(y == 0):
+        # if the y is zero then the argument is zero
+        argument = 0
+    else:
+        # Else calculate argument using trigonemtric equation
+        argument = math.atan(x/y)
+
+    return(argument, magnitude)
+
 # -- Variables --
 
 wind_vector = Vector(7, 180) # Example additional force vector
@@ -269,4 +289,4 @@ environment = PhysicsEnvironment() # Initialise the physics environment
 
 PhysicsObject("Ball", environment, 1, Vector(50, 45), [0, 0]) # Create a new physics object
 
-environment.simulate(1) # Begin simulation with updates every 1 second
+environment.simulate(1) # Begin simulation with updates every 1 second'''
