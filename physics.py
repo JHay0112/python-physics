@@ -49,18 +49,17 @@ class Vector:
         return(x, y)
 
     # Add another vector object to our vector object
-    def add_vector(self, add_vector):
+    def add_vectors(self, add_vectors):
 
-        # Get the x and y values of original vector and additional vector
-        self_x, self_y = self.return_xy()
-        add_x, add_y = add_vector.return_xy()
+        # Get the x and y values of original vector
+        x, y = self.return_xy()
 
-        # Add x and y values together
-        result_x = self_x + add_x
-        result_y = self_y + add_y
+        for add_vector in add_vectors:
+
+            x, y += add_vector.return_xy()
         
         # Assign converted to polar values to own
-        self.argument, self.magnitude = xy_to_polar(result_x, result_y)
+        self.argument, self.magnitude = xy_to_polar(x, y)
 
 '''
 # Stores an object that has physics applied to it
