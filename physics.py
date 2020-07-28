@@ -43,8 +43,8 @@ class Vector:
         y = 0 # Store y magnitude to return
 
         # Calculate the magnitudes of our x and y vectors using trigonometric functions
-        x = magnitude * math.cos(argument)
-        y = magnitude * math.sin(argument)
+        x = self.magnitude * math.cos(self.argument)
+        y = self.magnitude * math.sin(self.argument)
 
         return(x, y)
 
@@ -65,7 +65,7 @@ class Vector:
 class PhysicsObject:
 
     # Initialisation
-    def __init__(self, mass = 0, init_velocity = Vector(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0):
+    def __init__(self, mass = 0, init_velocity = Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0):
 
         global physics_objects
 
@@ -88,21 +88,21 @@ class PhysicsObject:
     # Calculate the acceleration acting on the object as a vector
     def acceleration(self):
 
-        return(Vector(0, 0).add(self.acceleration_vectors))
+        return(Vector().from_polar(0, 0).add(self.acceleration_vectors))
 
     # Calculte the momentum of the object as a vector
     def momentum(self):
 
-        return(Vector(self.direction().magnitude * self.mass, self.direction().argument))
+        return(Vector().from_polar(self.velocity().magnitude * self.mass, self.velocity().argument))
 
     # Calculate the current direction and magnitude of velocity at the time
     def velocity(self):
 
-        update_time()
+        self.update_time()
 
         init_vel_x, init_vel_y = self.init_velocity.return_xy()
 
-        accel_x, accel_y = acceleration().return_xy()
+        accel_x, accel_y = self.acceleration().return_xy()
 
         vel_x, vel_y = (velocity_equation(init_vel_x, accel_x, time), velocity_equation(init_vel_y, accel_y, self.time))
 
@@ -114,7 +114,7 @@ class PhysicsObject:
 
         init_vel_x, init_vel_y = self.init_velocity.return_xy()
 
-        accel_x, accel_y = acceleration().return_xy()
+        accel_x, accel_y = self.acceleration().return_xy()
 
         x = distance_equation(init_vel_x, self.time, accel_x)
         y = distance_equation(init_vel_y, self.time, accel_y)
