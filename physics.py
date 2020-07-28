@@ -50,6 +50,7 @@ class Vector:
 
     # Add another vector object to our vector object
     def add_vectors(self, add_vectors):
+    def add(self, add_vectors):
 
         # Get the x and y values of original vector
         x, y = self.return_xy()
