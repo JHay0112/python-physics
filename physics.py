@@ -5,6 +5,8 @@ physics.py
 Author: Jordan Hay
 Date: 2020-07-24
 
+A 2D physics simulation in Python 3
+
 '''
 
 # -- Imports --
@@ -19,12 +21,27 @@ import copy # For copying lists
 # Vectors for vector maths
 class Vector:
 
+    ''' 
+    Vector()
+
+    Vectors for vector maths.
+    '''
+
     # Initialise empty polar form vector
     magnitude = 0
     argument = 0
 
     # Generate vector from x and y magnitudes
     def from_xy(self, x, y):
+
+        '''
+        from_xy(x, y)
+
+        Generates the vector object from x and y magnitudes
+
+        x (float) - Magnitude on x-axis
+        y (float) - Magnitude on y-axis
+        '''
 
         # Set input to object vars after xy to polar conversion
         self.magnitude, self.argument = xy_to_polar(x, y)
@@ -34,6 +51,15 @@ class Vector:
     # Generate vector from polar description
     def from_polar(self, magnitude, argument):
 
+        '''
+        from_polar(magnitude, argument)
+
+        Generates the vector object from a magnitude and an argument
+
+        magnitude (float) - The magnitude/length of the vector
+        argument (float) - Angle measured from right horizontal in degrees
+        '''
+
         # Set the input to object vars
         self.magnitude = magnitude
         self.argument = argument
@@ -42,18 +68,41 @@ class Vector:
 
     # Convert polar form to x,y form and return
     def return_xy(self):
+        '''
+        return_xy()
+
+        Returns the x and y magnitudes of the vector
+        '''
 
         x = 0 # Store x magnitude to return
         y = 0 # Store y magnitude to return
 
         # Calculate the magnitudes of our x and y vectors using trigonometric functions
-        x = self.magnitude * math.cos(self.argument)
-        y = self.magnitude * math.sin(self.argument)
+        x = self.magnitude * math.cos(math.radians(self.argument))
+        y = self.magnitude * math.sin(math.radians(self.argument))
 
         return(x, y)
 
+    def return_polar(self):
+
+        '''
+        return_polar()
+
+        Returns the magnitude and argument of the vector
+        '''
+
+        return(self.magnitude, self.argument)
+
     # Add another vector object to our vector object
     def add(self, add_vectors):
+
+        '''
+        add(add_vectors)
+
+        Vector addition. Adds vectors in list to current vector
+
+        add_vectors (list) - A list of vectors to be added to the current vector
+        '''
 
         # Get the x and y values of original vector
         x, y = self.return_xy()
@@ -69,6 +118,18 @@ class Vector:
         return(self)
 
 class PhysicsObject:
+
+    '''
+    PhysicsObject()
+
+    Describes objects to be simulated under the laws of physics
+
+    mass (float) - The mass of the object in kilograms
+    init_velocity (Vector object) - A Vector object describing the initial velocity of the object
+    init_position (list [x, y]) - Coordinates of the objects initial position
+    acceleration_vectors (list of Vector objects) - A list of Vector objects that act as acceleration on the object
+    init_time (float) - The time in the physics simulation when the object was initiated
+    '''
 
     # Initialisation
     def __init__(self, mass = 0, init_velocity = Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0):
@@ -158,7 +219,7 @@ def xy_to_polar(x, y):
         argument = 0
     else:
         # Else calculate argument using trigonemtric equation
-        argument = math.atan(x/y)
+        argument = math.degrees(math.atan(x/y))
 
     return(argument, magnitude)
 
