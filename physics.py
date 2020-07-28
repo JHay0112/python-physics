@@ -29,12 +29,16 @@ class Vector:
         # Set input to object vars after xy to polar conversion
         self.magnitude, self.argument = xy_to_polar(x, y)
 
+        return(self)
+
     # Generate vector from polar description
     def from_polar(self, magnitude, argument):
 
         # Set the input to object vars
         self.magnitude = magnitude
         self.argument = argument
+
+        return(self)
 
     # Convert polar form to x,y form and return
     def return_xy(self):
@@ -61,6 +65,8 @@ class Vector:
 
         # Assign converted to polar values to own
         self.argument, self.magnitude = xy_to_polar(x, y)
+
+        return(self)
 
 class PhysicsObject:
 
