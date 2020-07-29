@@ -31,6 +31,10 @@ class Vector:
     magnitude = 0
     argument = 0
 
+    def __init__(self):
+
+        pass
+
     # Generate vector from x and y magnitudes
     def from_xy(self, x, y):
 
@@ -143,14 +147,14 @@ class PhysicsObject:
         self.init_time = init_time
         self.time = 0
 
-        physics_objects.extend(self) # Add self to list of physics_objects
+        physics_objects.append(self) # Add self to list of physics_objects
 
     # Update object adjusted time using global physics time and own init time
     def update_time(self):
 
         global physics_time # Get physics time global
 
-        return(physics_time - self.init_time) # Return time adjusted with vector init_time
+        self.time = physics_time - self.init_time # Return time adjusted with vector init_time
 
     # Calculate the acceleration acting on the object as a vector
     def acceleration(self):
@@ -171,11 +175,11 @@ class PhysicsObject:
 
         accel_x, accel_y = self.acceleration().return_xy()
 
-        vel_x, vel_y = (velocity_equation(init_vel_x, accel_x, time), velocity_equation(init_vel_y, accel_y, self.time))
+        vel_x, vel_y = (velocity_equation(init_vel_x, accel_x, self.time), velocity_equation(init_vel_y, accel_y, self.time))
 
         magnitude, argument = xy_to_polar(vel_x, vel_y)
 
-        return(Vector(magnitude, argument))
+        return(Vector().from_polar(magnitude, argument))
 
     def position(self):
 
@@ -223,9 +227,39 @@ def xy_to_polar(x, y):
 
     return(argument, magnitude)
 
+# Simulate the physics objects
+def simulate(increment):
+
+    global physics_objects, physics_time
+
+    simulate = True # flag for simulation loop
+
+    while(simulate):
+
+        for obj in physics_objects:
+
+            obj.update_time()
+
+            print(obj.velocity().return_xy())
+
+        physics_time += increment
+
+        sleep(increment)
+
 # -- Variables --
 
 physics_objects = [] # List of all physics objects
-physics_time = 0 # Record what "time" it is in the system 
+physics_time = 0 # Record what "time" it is in the system
+
+# -- Constants --
+
+GRAVITY_VECTOR = Vector().from_xy(0, -9.8)
 
 # -- Main --
+
+# If this is the main module then start a simulation that we can use for testing the engine
+if(__name__ == "__main__"):
+
+    PhysicsObject(1, Vector().from_polar(30, 30), [0, 0], [GRAVITY_VECTOR])
+
+    simulate(1)
