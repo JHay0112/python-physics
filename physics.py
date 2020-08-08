@@ -117,7 +117,7 @@ class Vector:
             y += add_vector.return_xy()[1]
 
         # Assign converted to polar values to own
-        self.argument, self.magnitude = xy_to_polar(x, y)
+        self.magnitude, self.argument = xy_to_polar(x, y)
 
         return(self)
 
@@ -217,15 +217,9 @@ def xy_to_polar(x, y):
     # Get the magnitude of the resultant vector using pythagorean theorom
     magnitude = math.sqrt((x ** 2) + (y ** 2))
 
-    # Check that y is not zero else an error will be produced if we try and run trigonometric function
-    if(y == 0):
-        # if the y is zero then the argument is zero
-        argument = 0
-    else:
-        # Else calculate argument using trigonemtric equation
-        argument = math.degrees(math.atan(x/y))
+    argument = math.degrees(math.sin(y/magnitude))
 
-    return(argument, magnitude)
+    return(magnitude, argument)
 
 # Simulate the physics objects
 def simulate(increment):
@@ -240,7 +234,7 @@ def simulate(increment):
 
             obj.update_time()
 
-            print(obj.velocity().return_xy())
+            print(obj.position())
 
         physics_time += increment
 
@@ -260,6 +254,6 @@ GRAVITY_VECTOR = Vector().from_xy(0, -9.8)
 # If this is the main module then start a simulation that we can use for testing the engine
 if(__name__ == "__main__"):
 
-    PhysicsObject(1, Vector().from_polar(30, 30), [0, 0], [GRAVITY_VECTOR])
+    PhysicsObject(1, Vector().from_polar(10, 45), [0, 0], [GRAVITY_VECTOR])
 
     simulate(1)
