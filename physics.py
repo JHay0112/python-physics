@@ -1,9 +1,11 @@
 '''
 
-    physics.py
+physics.py
 
-    Author: Jordan Hay
-    Date: 2020-07-24
+Author: Jordan Hay
+Date: 2020-07-24
+
+A 2D physics simulation in Python 3
 
 '''
 
@@ -19,230 +21,176 @@ import copy # For copying lists
 # Vectors for vector maths
 class Vector:
 
-    # Init
-    # magnitude (int) - The magnitude of the vector
-    # argument (int) - The angle of the vector from horizontal
-    def __init__(self, magnitude, argument):
+    ''' 
+    Vector()
 
-        # Assign paramaters to the object attributes
-        self.magnitude = magnitude
-        self.argument = argument
+    Vectors for vector maths.
+    '''
 
-    # Print out information about the vector
-    def info(self):
+    # Initialise empty polar form vector
+    magnitude = 0
+    argument = 0
 
-        print(f"Magnitude: {self.magnitude}, Argument: {self.argument}")
-
-    # Return the x and y sub-vectors as a tuple
-    def return_xy(self):
-
-        argument = math.radians(self.argument) # Make a copy of our argument in radians for math.sin and math.cos
-
-        # Calculate the magnitudes of the x and y vectors (using SOHCAHTOA) and create new vector objects
-        x = Vector(self.magnitude * math.cos(argument), 0)
-        y = Vector(self.magnitude * math.sin(argument), 90)
-
-        return(x, y) # return x, y as a tuple
-
-    # Add another vector to our vector
-    def add(self, add_vector):
-
-        self_x, self_y = self.return_xy() # Get x and y vectors from our vector
-        add_x, add_y = add_vector.return_xy() # Get x and y vectors from vector to be added
-
-        x = self_x.magnitude + add_x.magnitude # Add x magnitudes
-        y = self_y.magnitude + add_y.magnitude # Add y magnitudes
-
-        # Calculate magnitude for new vector using pythag thereom
-        magnitude = math.sqrt((x ** 2) + (y ** 2))
-
-        # Calculate argument using x and y vectors using SOHCAHTOA
-        argument = math.degrees(math.asin(y/magnitude))
-
-        # Update our magnitdue and argument with the new ones
-        self.magnitude = magnitude
-        self.argument = argument
-
-# The environment in which all the physics objects are held
-class PhysicsEnvironment:
-
-    gravity = Vector(-10, 90) # Gravity vector, same as earth's
-    forces = [gravity] # List of force vectors
-    objects = [] # Store objects inside environement
-    phys_time = 0 # Store how long the physics simulation has been running
-
-    # Run physics simulation
-    # increment (int) - incrememnt in seconds for running the simulation
-    def simulate(self, increment):
-
-        run_simulation = True # Flag for the loop
-
-        while(run_simulation):
-
-            run_start = time() # Get time for when running started
-
-            # For every object in our environment
-            for o in self.objects:
-                
-                o.set_time(self.phys_time) # set the object time to be the same as simulation time
-                o.update() # Update our object
-                self.check_for_collisions()
-                o.info() # Display info of the object
-
-            self.phys_time += increment # Increment the environments by the set increment
-
-            run_end = time() # Get time for when running ended
-
-            runtime = run_end - run_start # Calculate how long the set of code took to run
-
-            sleep(increment - runtime) # Sleep for the increment time minus how long the previous code took to run
-
-    # Check for collisions between objects
-    def check_for_collisions(self):
+    def __init__(self):
 
         pass
 
-# Stores an object that has physics applied to it
+    # Generate vector from x and y magnitudes
+    def from_xy(self, x, y):
+
+        '''
+        from_xy(x, y)
+
+        Generates the vector object from x and y magnitudes
+
+        x (float) - Magnitude on x-axis
+        y (float) - Magnitude on y-axis
+        '''
+
+        # Set input to object vars after xy to polar conversion
+        self.magnitude, self.argument = xy_to_polar(x, y)
+
+        return(self)
+
+    # Generate vector from polar description
+    def from_polar(self, magnitude, argument):
+
+        '''
+        from_polar(magnitude, argument)
+
+        Generates the vector object from a magnitude and an argument
+
+        magnitude (float) - The magnitude/length of the vector
+        argument (float) - Angle measured from right horizontal in degrees
+        '''
+
+        # Set the input to object vars
+        self.magnitude = magnitude
+        self.argument = argument
+
+        return(self)
+
+    # Convert polar form to x,y form and return
+    def return_xy(self):
+        '''
+        return_xy()
+
+        Returns the x and y magnitudes of the vector
+        '''
+
+        x = 0 # Store x magnitude to return
+        y = 0 # Store y magnitude to return
+
+        # Calculate the magnitudes of our x and y vectors using trigonometric functions
+        x = self.magnitude * math.cos(math.radians(self.argument))
+        y = self.magnitude * math.sin(math.radians(self.argument))
+
+        return(x, y)
+
+    def return_polar(self):
+
+        '''
+        return_polar()
+
+        Returns the magnitude and argument of the vector
+        '''
+
+        return(self.magnitude, self.argument)
+
+    # Add another vector object to our vector object
+    def add(self, add_vectors):
+
+        '''
+        add(add_vectors)
+
+        Vector addition. Adds vectors in list to current vector
+
+        add_vectors (list) - A list of vectors to be added to the current vector
+        '''
+
+        # Get the x and y values of original vector
+        x, y = self.return_xy()
+
+        for add_vector in add_vectors:
+
+            x += add_vector.return_xy()[0]
+            y += add_vector.return_xy()[1]
+
+        # Assign converted to polar values to own
+        self.magnitude, self.argument = xy_to_polar(x, y)
+
+        return(self)
+
 class PhysicsObject:
 
-    # Initialisaion
-    # name (str) - The name of the object, to make it easier to identify which object we are getting the name of
-    # environment (obj) - The PhysicsEnvironment that the physics object is apart of
-    # mass (int) - Mass in kgs of the objects
-    # velocity (obj) - Vector describing the initial velocity of the physics object
-    # position (dict) - Cartesian coordinates of the object
-    # forces (list) - List of vector forces applied to the object
-    # init_time (int) - Time in seconds at which the velocity vector applies to
-    def __init__(self, name, environment, mass, velocity, position, forces = [], init_time = None):
+    '''
+    PhysicsObject()
 
-        # Assign parameters to object attributes
-        self.name = name
-        self.environment = environment
-        self.mass = mass
-        self.init_velocity = velocity
-        self.velocity = velocity
-        self.position = position
-        self.start_position = copy.copy(position) # Using copy to ensure changes do not link
-        self.forces = forces
-        self.forces.extend(self.environment.forces) # Add physics environement forces to item
-        self.init_time = init_time # In a sense this is the absolute time
-        self.time = 0 # Making this time relative to the vector
+    Describes objects to be simulated under the laws of physics
 
-        self.environment.objects.append(self) # Append this object to list of physics object in the environement
+    mass (float) - The mass of the object in kilograms
+    init_velocity (Vector object) - A Vector object describing the initial velocity of the object
+    init_position (list [x, y]) - Coordinates of the objects initial position
+    acceleration_vectors (list of Vector objects) - A list of Vector objects that act as acceleration on the object
+    init_time (float) - The time in the physics simulation when the object was initiated
+    '''
 
-        # If init time has not been set make it that same as the current phys time
-        if(self.init_time is None):
-            self.init_time = self.environment.phys_time
+    # Initialisation
+    def __init__(self, mass = 0, init_velocity = Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0):
 
-        self.set_time(self.init_time) # Set time to be init_time
+        global physics_objects
 
-    # Adjust time relative with the init time and then set as relative time
-    def set_time(self, time):
+        self.mass = mass # Mass of our object
+        self.init_velocity = init_velocity # Velocity of the object at initialisation
+        self.init_position = init_position
+        self.acceleration_vectors = acceleration_vectors
+        self.init_time = init_time
+        self.time = 0
 
-        self.time = time - self.init_time # Set time adjusted relative to init_time 
+        physics_objects.append(self) # Add self to list of physics_objects
 
-    # Print out information relevant to self
-    def info(self):
+    # Update object adjusted time using global physics time and own init time
+    def update_time(self):
 
-        print(f"Name: {self.name}, Mass: {self.mass}kg, Velocity: {self.velocity.magnitude}m/s, momentum: {self.momentum().magnitude}kgm/s, X: {self.position[0]}m Y: {self.position[1]}m, X Velocity: {self.velocity.return_xy()[0].magnitude}m/s, Y Velocity: {self.velocity.return_xy()[1].magnitude}m/s")
+        global physics_time # Get physics time global
 
-    # Caculate and return object momentum vector
+        self.time = physics_time - self.init_time # Return time adjusted with vector init_time
+
+    # Calculate the acceleration acting on the object as a vector
+    def acceleration(self):
+
+        return(Vector().from_polar(0, 0).add(self.acceleration_vectors))
+
+    # Calculte the momentum of the object as a vector
     def momentum(self):
 
-        return(Vector(self.mass * self.direction_vector().magnitude, self.direction_vector().argument))
+        return(Vector().from_polar(self.velocity().magnitude * self.mass, self.velocity().argument))
 
-    # Calculate the resultant vector
-    def resultant_vector(self):
+    # Calculate the current direction and magnitude of velocity at the time
+    def velocity(self):
 
-        result = self.init_velocity # Set vector to be velocity
+        self.update_time()
 
-        result.add(self.forces_vector()) # add forces vector to velocity vector
+        init_vel_x, init_vel_y = self.init_velocity.return_xy()
 
-        return(result)
+        accel_x, accel_y = self.acceleration().return_xy()
 
-    # Calculate the vector of applied forces
-    def forces_vector(self):
+        vel_x, vel_y = (velocity_equation(init_vel_x, accel_x, self.time), velocity_equation(init_vel_y, accel_y, self.time))
 
-        result = Vector(0, 0) # Create blank vector
+        magnitude, argument = xy_to_polar(vel_x, vel_y)
 
-        # For every force applied to object
-        for force in range(0, len(self.forces)):
+        return(Vector().from_polar(magnitude, argument))
 
-            result.add(self.forces[force]) # Add force vector to result vector
+    def position(self):
 
-        return(result)
+        init_vel_x, init_vel_y = self.init_velocity.return_xy()
 
-    # Vector that returns vector at point in time
-    def direction_vector(self):
+        accel_x, accel_y = self.acceleration().return_xy()
 
-        # Get the initial velocity
-        init_vel_x = self.init_velocity.return_xy()[0].magnitude
-        init_vel_y = self.init_velocity.return_xy()[1].magnitude
+        x = distance_equation(init_vel_x, self.time, accel_x)
+        y = distance_equation(init_vel_y, self.time, accel_y)
 
-        # Get accelerations
-        accel_x = self.forces_vector().return_xy()[0].magnitude
-        accel_y = self.forces_vector().return_xy()[1].magnitude
-
-        # Calculate x and y vectors for current velocity
-        vel_x = velocity_equation(init_vel_x, accel_x, self.time)
-        vel_y = velocity_equation(init_vel_y, accel_y, self.time)
-
-        result = Vector(0, 0) # Blank vector
-        result.add(Vector(vel_x, 0)) # Add the x vector
-        result.add(Vector(vel_y, 90)) # Add the y vector
-
-        return(result)
-
-    # Update the vector information
-    def update(self):
-
-        # Get x and y velocity
-        vel_x, vel_y = self.init_velocity.return_xy()
-
-        # Set to be magnitudes
-        vel_x = vel_x.magnitude
-        vel_y = vel_y.magnitude 
-
-        # Get x and y acceleration magnitude
-        accel_x = self.forces_vector().return_xy()[0].magnitude
-        accel_y = self.forces_vector().return_xy()[1].magnitude
-        
-        # Set the current velocity to be the direction vector
-        self.velocity = self.direction_vector()
-
-        # Set the updated position
-        self.position[0] = distance_equation(vel_x, self.time, accel_x) + self.start_position[0]
-        self.position[1] = distance_equation(vel_y, self.time, accel_y) + self.start_position[1]
-
-    # Collide our object with another
-    def collide(self, collision_object):
-
-        print(f"Collision between {self.name} and {collision_object.name}")
-
-        # Add our total momentum together on each axis
-        x_total_momentum = self.momentum().return_xy()[0]
-        x_total_momentum.add(collision_object.momentum().return_xy()[0])
-        y_total_momentum = self.momentum().return_xy()[1]
-        y_total_momentum.add(collision_object.momentum().return_xy()[1])
-
-        # Total mass
-        total_mass = self.mass + collision_object.mass
-
-        # Divide the magnitudes by the mass
-        x_velocity = x_total_momentum.magnitude / total_mass
-        y_velocity = y_total_momentum.magnitude / total_mass
-
-        # Add the vectors together
-        result = Vector(0, 0)
-        result.add(Vector(x_velocity, 0))
-        result.add(Vector(y_velocity, 90))
-
-        # Set the new initial velocities and times
-        self.init_velocity = result
-        self.init_time = self.time
-
-        collision_object.init_velocity = result
-        collision_object.init_time = collision_object.time
+        return([x, y])
 
 # -- Functions --
 
@@ -260,13 +208,52 @@ def velocity_equation(init_vel, accel, time):
 
     return(vel)
 
+# Convert x and y magnitudes to polar values
+def xy_to_polar(x, y):
+
+    magnitude = 0 # Store magnitude to return
+    argument = 0 # Store argument to return
+
+    # Get the magnitude of the resultant vector using pythagorean theorom
+    magnitude = math.sqrt((x ** 2) + (y ** 2))
+
+    argument = math.degrees(math.sin(y/magnitude))
+
+    return(magnitude, argument)
+
+# Simulate the physics objects
+def simulate(increment):
+
+    global physics_objects, physics_time
+
+    simulate = True # flag for simulation loop
+
+    while(simulate):
+
+        for obj in physics_objects:
+
+            obj.update_time()
+
+            print(obj.position())
+
+        physics_time += increment
+
+        sleep(increment)
+
 # -- Variables --
 
-wind_vector = Vector(7, 180) # Example additional force vector
-environment = PhysicsEnvironment() # Initialise the physics environment
+physics_objects = [] # List of all physics objects
+physics_time = 0 # Record what "time" it is in the system
+
+# -- Constants --
+
+GRAVITY_VECTOR = Vector().from_xy(0, -9.8)
 
 # -- Main --
 
-PhysicsObject("Ball", environment, 1, Vector(50, 45), [0, 0]) # Create a new physics object
+# If this is the main module then start a simulation that we can use for testing the engine
+if(__name__ == "__main__"):
 
-environment.simulate(1) # Begin simulation with updates every 1 second
+    PhysicsObject(1, Vector().from_polar(10, 45), [0, 0], [GRAVITY_VECTOR])
+
+    simulate(1)
