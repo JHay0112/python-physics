@@ -27,13 +27,11 @@ class Vector:
     Vectors for vector maths.
     '''
 
-    # Initialise empty polar form vector
-    magnitude = 0
-    argument = 0
-
     def __init__(self):
 
-        pass
+        # Initialise empty polar form vector
+        self.magnitude = 0
+        self.argument = 0
 
     # Generate vector from x and y magnitudes
     def from_xy(self, x, y):
