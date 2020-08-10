@@ -30,8 +30,8 @@ class Vector:
     def __init__(self):
 
         # Initialise empty polar form vector
-        self.magnitude = 0
-        self.argument = 0
+        self._magnitude = 0
+        self._argument = 0
 
     # Generate vector from x and y magnitudes
     def from_xy(self, x, y):
@@ -46,7 +46,7 @@ class Vector:
         '''
 
         # Set input to object vars after xy to polar conversion
-        self.magnitude, self.argument = xy_to_polar(x, y)
+        self._magnitude, self._argument = xy_to_polar(x, y)
 
         return(self)
 
@@ -63,8 +63,8 @@ class Vector:
         '''
 
         # Set the input to object vars
-        self.magnitude = magnitude
-        self.argument = argument
+        self._magnitude = magnitude
+        self._argument = argument
 
         return(self)
 
@@ -80,8 +80,8 @@ class Vector:
         y = 0 # Store y magnitude to return
 
         # Calculate the magnitudes of our x and y vectors using trigonometric functions
-        x = self.magnitude * math.cos(math.radians(self.argument))
-        y = self.magnitude * math.sin(math.radians(self.argument))
+        x = self._magnitude * math.cos(math.radians(self._argument))
+        y = self._magnitude * math.sin(math.radians(self._argument))
 
         return(x, y)
 
@@ -93,7 +93,7 @@ class Vector:
         Returns the magnitude and argument of the vector
         '''
 
-        return(self.magnitude, self.argument)
+        return(self._magnitude, self._argument)
 
     # Add another vector object to our vector object
     def add(self, add_vectors):
@@ -115,7 +115,7 @@ class Vector:
             y += add_vector.return_xy()[1]
 
         # Assign converted to polar values to own
-        self.magnitude, self.argument = xy_to_polar(x, y)
+        self._magnitude, self._argument = xy_to_polar(x, y)
 
         return(self)
 
@@ -138,12 +138,12 @@ class PhysicsObject:
 
         global physics_objects
 
-        self.mass = mass # Mass of our object
-        self.init_velocity = init_velocity # Velocity of the object at initialisation
-        self.init_position = init_position
-        self.acceleration_vectors = acceleration_vectors
-        self.init_time = init_time
-        self.time = 0
+        self._mass = mass # Mass of our object
+        self._init_velocity = init_velocity # Velocity of the object at initialisation
+        self._init_position = init_position
+        self._acceleration_vectors = acceleration_vectors
+        self._init_time = init_time
+        self._time = 0
 
         physics_objects.append(self) # Add self to list of physics_objects
 
@@ -152,28 +152,28 @@ class PhysicsObject:
 
         global physics_time # Get physics time global
 
-        self.time = physics_time - self.init_time # Return time adjusted with vector init_time
+        self._time = physics_time - self._init_time # Return time adjusted with vector init_time
 
     # Calculate the acceleration acting on the object as a vector
     def acceleration(self):
 
-        return(Vector().from_polar(0, 0).add(self.acceleration_vectors))
+        return(Vector().from_polar(0, 0).add(self._acceleration_vectors))
 
     # Calculte the momentum of the object as a vector
     def momentum(self):
 
-        return(Vector().from_polar(self.velocity().magnitude * self.mass, self.velocity().argument))
+        return(Vector().from_polar(self.velocity().magnitude * self._mass, self.velocity().argument))
 
     # Calculate the current direction and magnitude of velocity at the time
     def velocity(self):
 
-        self.update_time()
+        self._update_time()
 
-        init_vel_x, init_vel_y = self.init_velocity.return_xy()
+        init_vel_x, init_vel_y = self._init_velocity.return_xy()
 
         accel_x, accel_y = self.acceleration().return_xy()
 
-        vel_x, vel_y = (velocity_equation(init_vel_x, accel_x, self.time), velocity_equation(init_vel_y, accel_y, self.time))
+        vel_x, vel_y = (velocity_equation(init_vel_x, accel_x, self._time), velocity_equation(init_vel_y, accel_y, self._time))
 
         magnitude, argument = xy_to_polar(vel_x, vel_y)
 
@@ -181,12 +181,12 @@ class PhysicsObject:
 
     def position(self):
 
-        init_vel_x, init_vel_y = self.init_velocity.return_xy()
+        init_vel_x, init_vel_y = self._init_velocity.return_xy()
 
         accel_x, accel_y = self.acceleration().return_xy()
 
-        x = distance_equation(init_vel_x, self.time, accel_x)
-        y = distance_equation(init_vel_y, self.time, accel_y)
+        x = distance_equation(init_vel_x, self._time, accel_x)
+        y = distance_equation(init_vel_y, self._time, accel_y)
 
         return([x, y])
 
