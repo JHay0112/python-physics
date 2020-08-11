@@ -167,7 +167,7 @@ class PhysicsObject:
     # Calculate the current direction and magnitude of velocity at the time
     def velocity(self):
 
-        self._update_time()
+        self.update_time()
 
         init_vel_x, init_vel_y = self._init_velocity.return_xy()
 
@@ -232,7 +232,7 @@ def simulate(increment):
 
             obj.update_time()
 
-            print(obj.position())
+            print(f"(x, y): {obj.position()}, (magnitude, argument): {obj.velocity().return_polar()}")
 
         physics_time += increment
 
@@ -252,6 +252,6 @@ GRAVITY_VECTOR = Vector().from_xy(0, -9.8)
 # If this is the main module then start a simulation that we can use for testing the engine
 if(__name__ == "__main__"):
 
-    PhysicsObject(1, Vector().from_polar(10, 45), [0, 0], [GRAVITY_VECTOR])
+    PhysicsObject(1, Vector().from_polar(100, 45), [0, 0], [GRAVITY_VECTOR])
 
     simulate(1)
