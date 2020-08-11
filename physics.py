@@ -14,7 +14,7 @@ A 2D physics simulation in Python 3
 import math # Mathematical functions etc
 from time import time # Used to get the time since the epoch
 from time import sleep # Pause program for a length of time
-import copy # For copying lists
+from copy import copy
 
 # -- Objects --
 
@@ -44,6 +44,8 @@ class Vector:
         x (float) - Magnitude on x-axis
         y (float) - Magnitude on y-axis
         '''
+
+        global xy_to_polar # somehow this fixes issue where Vector() can't find xy_to_polar()
 
         # Set input to object vars after xy to polar conversion
         self._magnitude, self._argument = xy_to_polar(x, y)
@@ -109,16 +111,62 @@ class Vector:
         # Get the x and y values of original vector
         x, y = self.return_xy()
         
+        # Check there are add vectors first
+        if(add_vectors is not None):
         # For every vector to be added
-        for add_vector in add_vectors:
+            for add_vector in add_vectors:
 
-            x += add_vector.return_xy()[0] # Add the x components  
-            y += add_vector.return_xy()[1] # Add the y components
+                x += add_vector.return_xy()[0] # Add the x components  
+                y += add_vector.return_xy()[1] # Add the y components
 
-        # Assign converted to polar values to own
-        self._magnitude, self._argument = xy_to_polar(x, y)
+            # Assign converted to polar values to own
+            self._magnitude, self._argument = xy_to_polar(x, y)
 
         return(self) # Return self so that vector object can be initialised using this command
+
+# The physics environment that an object or objects exist in
+class PhysicsEnvironment:
+
+    def __init__(self, acceleration_vectors = [], name = None):
+
+        self._acceleration_vectors = copy(acceleration_vectors)
+        self._time = 0
+        self._objects = [] # list of physics objects that are present in the environment
+        self._name = name # Optional name for easier sorting
+
+    def get_acceleration_vectors(self):
+
+        return(copy(self._acceleration_vectors))
+
+    def get_time(self):
+
+        return(self._time)
+
+    def add_object(self, object):
+
+        self._objects.append(object)
+
+    def increment_time(self, increment):
+
+        self._time += increment
+
+    def simulate(self, runtime, increment):
+
+        total_runtime = 0
+
+        while(total_runtime < runtime):
+
+            for obj in self._objects:
+
+                obj.update_time()
+
+                print(f"{obj.get_name()}\n(x, y): {obj.global_position()}, \n(magnitude, argument): {obj.velocity().return_polar()}\n--")
+
+            self.increment_time(increment)
+
+            total_runtime += increment
+
+            sleep(increment)
 
 class PhysicsObject:
 
@@ -135,26 +183,23 @@ class PhysicsObject:
     '''
 
     # Initialisation
-    def __init__(self, mass = 0, init_velocity = Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0, name = None):
+    def __init__(self, environment, mass = 0, init_velocity = Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0, name = None):
 
-        global physics_objects
-
+        self._environment = environment # The environment in which the object exists
         self._mass = mass # Mass of our object
         self._init_velocity = init_velocity # Velocity of the object at initialisation
         self._init_position = init_position # The initial position of the object
-        self._acceleration_vectors = acceleration_vectors # Vectors that are accelerating our object
+        self._acceleration_vectors = acceleration_vectors + self._environment.get_acceleration_vectors() # Vectors that are accelerating our object
         self._init_time = init_time # The time at which the physics object was created
         self._time = 0 # Adjusted time of the object
         self._name = name # Optional name variable to allow object tracking easier in some cases
 
-        physics_objects.append(self) # Add self to list of physics_objects
+        self._environment.add_object(self) # Add self to list of objects in the physics environment
 
     # Update object adjusted time using global physics time and own init time
     def update_time(self):
 
-        global physics_time # Get physics time global
-
-        self._time = physics_time - self._init_time # Return time adjusted with vector init_time
+        self._time = self._environment.get_time() - self._init_time # Return time adjusted with vector init_time
 
     def get_name(self):
 
@@ -172,8 +217,6 @@ class PhysicsObject:
 
     # Calculate the current direction and magnitude of velocity at the time
     def velocity(self):
-
-        self.update_time() # Update the object relative time
 
         init_vel_x, init_vel_y = self._init_velocity.return_xy() # Get initial velocity x and y components
 
@@ -236,43 +279,17 @@ def xy_to_polar(x, y):
 
     return(magnitude, argument) # Return magnitude and argument
 
-# Simulate the physics objects
-def simulate(increment):
-
-    global physics_objects, physics_time # get some physics globals
-
-    simulate = True # flag for simulation loop
-
-    while(simulate):
-
-        # For every object
-        for obj in physics_objects:
-
-            obj.update_time() # update the object time
-
-            # Print out some object attributes
-            print(f"{obj.get_name()}\n(x, y): {obj.global_position()}, \n(magnitude, argument): {obj.velocity().return_polar()}\n--")
-
-        # Add the time increment
-        physics_time += increment
-
-        # Sleep for the time increment
-        sleep(increment)
-
-# -- Variables --
-
-physics_objects = [] # List of all physics objects
-physics_time = 0 # Record what "time" it is in the system
-
 # -- Constants --
 
-GRAVITY_VECTOR = Vector().from_xy(0, -9.8) # Gravity vector, as per earth gravity
+EARTH_GRAVITY = Vector().from_xy(0, -9.8)
 
 # -- Main --
 
 # If this is the main module then start a simulation that we can use for testing the engine
 if(__name__ == "__main__"):
 
-    PhysicsObject(1, Vector().from_polar(100, 45), [0, 0], [GRAVITY_VECTOR], name = "Object1")
+    environment = PhysicsEnvironment(acceleration_vectors = [EARTH_GRAVITY])
 
-    simulate(1)
+    PhysicsObject(environment, 1, Vector().from_polar(100, 45), [0, 0], name = "Object1")
+
+    environment.simulate(10, 1)
