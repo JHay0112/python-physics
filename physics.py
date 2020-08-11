@@ -135,7 +135,7 @@ class PhysicsObject:
     '''
 
     # Initialisation
-    def __init__(self, mass = 0, init_velocity = Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0):
+    def __init__(self, mass = 0, init_velocity = Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0, name = None):
 
         global physics_objects
 
@@ -145,6 +145,7 @@ class PhysicsObject:
         self._acceleration_vectors = acceleration_vectors # Vectors that are accelerating our object
         self._init_time = init_time # The time at which the physics object was created
         self._time = 0 # Adjusted time of the object
+        self._name = name # Optional name variable to allow object tracking easier in some cases
 
         physics_objects.append(self) # Add self to list of physics_objects
 
@@ -154,6 +155,10 @@ class PhysicsObject:
         global physics_time # Get physics time global
 
         self._time = physics_time - self._init_time # Return time adjusted with vector init_time
+
+    def get_name(self):
+
+        return(self._name)
 
     # Calculate the acceleration acting on the object as a vector
     def acceleration(self):
@@ -180,17 +185,27 @@ class PhysicsObject:
 
         return(Vector().from_polar(magnitude, argument)) # Create and return a vector from polar form
 
-    # Calculate the position of the object in time
-    def position(self):
+    # Calculate the x, y position of the object (relative to start point)
+    def relative_position(self):
 
         init_vel_x, init_vel_y = self._init_velocity.return_xy() # Get x and y components of initial velocity
 
         accel_x, accel_y = self.acceleration().return_xy() # Get x and y components of acceleration vectors
 
-        x = distance_equation(init_vel_x, self._time, accel_x) + self._init_position[0] # Calculate x position + initial position
-        y = distance_equation(init_vel_y, self._time, accel_y) + self._init_position[1] # Calculate y position + initual position
+        x = distance_equation(init_vel_x, self._time, accel_x) # Calculate x position
+        y = distance_equation(init_vel_y, self._time, accel_y) # Calculate y position
 
-        return([x, y]) # Return as x and y coordinates
+        return(x, y) # Return as x and y coordinates
+
+    # Calculate position of the object in the global environemnt
+    def global_position(self):
+
+        x, y = self.relative_position() # Calculate the relative position
+
+        x += self._init_position[0] # Add on x init position
+        y += self._init_position[1] # Add on y init position
+
+        return(x, y) # Return global position
 
 # -- Functions --
 
@@ -236,7 +251,7 @@ def simulate(increment):
             obj.update_time() # update the object time
 
             # Print out some object attributes
-            print(f"(x, y): {obj.position()}, (magnitude, argument): {obj.velocity().return_polar()}")
+            print(f"{obj.get_name()}\n(x, y): {obj.global_position()}, \n(magnitude, argument): {obj.velocity().return_polar()}\n--")
 
         # Add the time increment
         physics_time += increment
@@ -258,6 +273,6 @@ GRAVITY_VECTOR = Vector().from_xy(0, -9.8) # Gravity vector, as per earth gravit
 # If this is the main module then start a simulation that we can use for testing the engine
 if(__name__ == "__main__"):
 
-    PhysicsObject(1, Vector().from_polar(100, 45), [0, 0], [GRAVITY_VECTOR])
+    PhysicsObject(1, Vector().from_polar(100, 45), [0, 0], [GRAVITY_VECTOR], name = "Object1")
 
     simulate(1)
