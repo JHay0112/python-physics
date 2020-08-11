@@ -150,7 +150,7 @@ class PhysicsEnvironment:
 
         self._time += increment
 
-    def simulate(self, runtime, increment):
+    def simulate(self, runtime, increment, realtime = False):
 
         total_runtime = 0
 
@@ -166,7 +166,9 @@ class PhysicsEnvironment:
 
             total_runtime += increment
 
-            sleep(increment)
+            # If we're trying to simulate in real time then sleep for the increment time
+            if(realtime): 
+                sleep(increment)
 
 class PhysicsObject:
 
