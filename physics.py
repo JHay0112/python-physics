@@ -168,7 +168,7 @@ class PhysicsObject:
     # Calculte the momentum of the object as a vector
     def momentum(self):
 
-        return(Vector().from_polar(self.velocity().return_polar[0] * self._mass, self.velocity().return_polar[1])) # Create a vector from velocity magnitude * mass of the object for the magnitde and the argument of the velocity
+        return(Vector().from_polar(self.velocity().return_polar()[0] * self._mass, self.velocity().return_polar()[1])) # Create a vector from velocity magnitude * mass of the object for the magnitde and the argument of the velocity
 
     # Calculate the current direction and magnitude of velocity at the time
     def velocity(self):
