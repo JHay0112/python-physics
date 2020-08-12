@@ -33,6 +33,21 @@ class GUIEnvironment(phy.PhysicsEnvironment):
         self._canvas = tk.Canvas(parent, width = self._width, height = self._height)
         self._canvas.place(x = 0, y = 0)
 
+# An object in the environment
+class GUIObject(phy.PhysicsObject):
+
+    # Initialisation
+    def __init__(self, environment, physics = False, mass = 0, init_velocity = phy.Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0, name = None):
+
+        self._environment = environment
+        self._physics = physics
+
+        # If physics is enabled
+        if(self._physics):
+
+            # Run through parent init command
+            super(GUIObject, self).__init__(environment, mass = 0, init_velocity = phy.Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0, name = None)
+
 # -- Functions --
 
 # -- Constants --
