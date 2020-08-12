@@ -27,7 +27,7 @@ class GUIEnvironment(phy.PhysicsEnvironment):
         self._width = width # Width of canvas
         self._height = height # Height of canvas
 
-        super(Environment, self).__init__(acceleration_vectors, name) # Run through parent init command
+        super(GUIEnvironment, self).__init__(acceleration_vectors, name) # Run through parent init command
 
         # Initialise canvas object
         self._canvas = tk.Canvas(parent, width = self._width, height = self._height)
@@ -50,7 +50,7 @@ if(__name__ == "__main__"):
     root.attributes("-fullscreen", True)
 
     # Environent
-    e = Environment(root, [phy.EARTH_GRAVITY], root.winfo_screenwidth(), root.winfo_screenheight(), "Room 1")
+    e = GUIEnvironment(root, [phy.EARTH_GRAVITY], root.winfo_screenwidth(), root.winfo_screenheight(), "Room 1")
 
     # Exit button
     exit_btn = ttk.Button(root, text = "Close", command = root.destroy)
