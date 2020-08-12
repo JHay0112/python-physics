@@ -57,7 +57,7 @@ class GUIObject(phy.PhysicsObject):
         if(self._physics):
 
             # Run through parent init command
-            super(GUIObject, self).__init__(environment, mass = 0, init_velocity = phy.Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0, name = None)
+            super(GUIObject, self).__init__(environment, mass, init_velocity, init_position, acceleration_vectors, init_time, name)
 
 # -- Variables --
 
@@ -79,7 +79,7 @@ if(__name__ == "__main__"):
     exit_btn.place(x = 10, y = 10)
 
     # Test physics enabled object
-    o = GUIObject(e, e.canvas().create_rectangle(50, 50, 60, 60, fill = "black"), True, 1, name = "Test")
+    o = GUIObject(e, e.canvas().create_rectangle(50, 50, 60, 60, fill = "black"), True, 1, phy.Vector().from_polar(10, 45), name = "Test")
 
     # Begin physics simulation
     e.simulate(10, 1)
