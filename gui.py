@@ -42,13 +42,17 @@ class GUIEnvironment(phy.PhysicsEnvironment):
     # Simulate the environment, overwrites the physics simulation with a graphical interpretation
     def simulate(self):
 
-        self.increment_time(0.01)
+        self.increment_time(0.01) # Increment time
 
+        # For every object in the environment
         for obj in self._objects:
 
+            # Update time
             obj.update_time()
+            # Move the object
             obj.move()
 
+        # Schedule next simulation point
         self._parent.after(1, self.simulate)
             
 # An object in the environment
@@ -62,6 +66,7 @@ class GUIObject(phy.PhysicsObject):
         self._x = 0
         self._y = 0
 
+        # Generating the object shape
         if(shape["shape"] == "rectangle"):
 
             self._shape = self._environment.canvas().create_rectangle(init_position[0], init_position[1], init_position[0] + shape["width"], init_position[1] + shape["height"], fill = shape["fill"])
@@ -72,16 +77,21 @@ class GUIObject(phy.PhysicsObject):
             # Run through parent init command
             super(GUIObject, self).__init__(environment, mass, init_velocity, init_position, acceleration_vectors, init_time, name)
 
+    # Move object
     def move(self):
 
-        x, y = self.relative_position()
+        x, y = self.relative_position() # get position relative to start position
         
-        x -= self._x
+        # Modify to be only magnitudes of change
+        x -= self._x 
         y -= self._y
 
+        # Add change to recorded change
         self._x += x
         self._y += y
 
+        # Move the objects as per movement magnitudes
+        # -y is because magnitudes are used opposite to how I would use them
         self._environment.canvas().move(self._shape, x, -y)
 
 # -- Variables --
@@ -104,12 +114,10 @@ if(__name__ == "__main__"):
     exit_btn.place(x = 10, y = 10)
 
     # Start button
-    start_btn = ttk.Button(root, text = "Start", command = e.simulate)
+    start_btn = ttk.Button(root, text = "Start", command = e.simulate) # Command starts simulation
     start_btn.place(x = 10, y = 40)
 
     # Test physics enabled object
     o = GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "black"}, True, 1, phy.Vector().from_polar(30, 70), [100, 100], name = "Test")
 
-    root.mainloop()
-
-    
+    root.mainloop() # GUI event loop
