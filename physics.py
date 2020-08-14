@@ -201,9 +201,21 @@ class PhysicsObject:
 
         self._time = self._environment.get_time() - self._init_time # Return time adjusted with vector init_time
 
-    def get_name(self):
+    def name(self):
 
         return(self._name)
+
+    def mass(self):
+
+        return(self._mass)
+
+    def new_init_velocity(self, new_vel):
+
+        self._init_velocity = new_vel
+
+    def new_init_time(self, new_time):
+
+        self._init_time = new_time
 
     # Calculate the acceleration acting on the object as a vector
     def acceleration(self):
@@ -249,6 +261,25 @@ class PhysicsObject:
         y += self._init_position[1] # Add on y init position
 
         return(x, y) # Return global position
+
+    # Collide two objects together
+    def collide(self, col_object):
+
+        self_mom_x, self_mom_y = self.momentum().return_xy() # Get own momentumn in x and y
+        obj_mom_x, obj_mom_y = col_object.momentum().return_xy() # Get collision object momentum in x and y
+        tot_mass = self.mass() + col_object.mass()
+
+        init_mom_x = self_mom_x + obj_mom_x
+        init_mom_y = self_mom_y + obj_mom_y
+
+        vel_x = init_mom_x/tot_mass
+        vel_y = init_mom_y/tot_mass
+
+        final_vel = Vector().from_xy(vel_x, vel_y)
+
+        # Update own velocity and init time
+        self.new_init_velocity(final_vel)
+        self.new_init_time(self._environment.get_time())
 
 # -- Functions --
 
