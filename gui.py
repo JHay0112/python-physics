@@ -55,13 +55,16 @@ class GUIEnvironment(phy.PhysicsEnvironment):
 class GUIObject(phy.PhysicsObject):
 
     # Initialisation
-    def __init__(self, environment, physics = False, mass = 0, init_velocity = phy.Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0, name = None):
+    def __init__(self, environment, shape, physics = False, mass = 0, init_velocity = phy.Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0, name = None):
 
         self._environment = environment # Graphical and physical environment the object exists in
-        self._shape = self._environment.canvas().create_rectangle(10, 200, 20, 210, fill = "black")
         self._physics = physics # Flag for whether the object is physics enabled or not
         self._x = 0
         self._y = 0
+
+        if(shape["shape"] == "rectangle"):
+
+            self._shape = self._environment.canvas().create_rectangle(init_position[0], init_position[1], init_position[0] + shape["width"], init_position[1] + shape["height"], fill = shape["fill"])
 
         # If physics is enabled
         if(self._physics):
@@ -105,7 +108,7 @@ if(__name__ == "__main__"):
     start_btn.place(x = 10, y = 40)
 
     # Test physics enabled object
-    o = GUIObject(e, True, 1, phy.Vector().from_polar(30, 70), name = "Test")
+    o = GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "black"}, True, 1, phy.Vector().from_polar(30, 70), [100, 100], name = "Test")
 
     root.mainloop()
 
