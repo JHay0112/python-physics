@@ -14,6 +14,7 @@ Graphics for physics engine
 import physics as phy # The physics engine
 import tkinter as tk # GUI
 from tkinter import ttk # More GUI
+from time import time
 
 # -- Classes --
     
@@ -59,6 +60,8 @@ class GUIObject(phy.PhysicsObject):
         self._environment = environment # Graphical and physical environment the object exists in
         self._shape = self._environment.canvas().create_rectangle(10, 200, 20, 210, fill = "black")
         self._physics = physics # Flag for whether the object is physics enabled or not
+        self._x = 0
+        self._y = 0
 
         # If physics is enabled
         if(self._physics):
@@ -69,8 +72,12 @@ class GUIObject(phy.PhysicsObject):
     def move(self):
 
         x, y = self.relative_position()
+        
+        x -= self._x
+        y -= self._y
 
-        print(x)
+        self._x += x
+        self._y += y
 
         self._environment.canvas().move(self._shape, x, -y)
 
@@ -98,7 +105,7 @@ if(__name__ == "__main__"):
     start_btn.place(x = 10, y = 40)
 
     # Test physics enabled object
-    o = GUIObject(e, True, 1, phy.Vector().from_polar(2, 45), name = "Test")
+    o = GUIObject(e, True, 1, phy.Vector().from_polar(30, 45), name = "Test")
 
     root.mainloop()
 
