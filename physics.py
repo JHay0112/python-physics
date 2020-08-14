@@ -45,8 +45,6 @@ class Vector:
         y (float) - Magnitude on y-axis
         '''
 
-        global xy_to_polar # somehow this fixes issue where Vector() can't find xy_to_polar()
-
         # Set input to object vars after xy to polar conversion
         self._magnitude, self._argument = xy_to_polar(x, y)
 
@@ -283,7 +281,7 @@ def xy_to_polar(x, y):
 
 # -- Constants --
 
-EARTH_GRAVITY = Vector().from_xy(0, -9.8)
+EARTH_GRAVITY = Vector().from_polar(9.8, -90)
 
 # -- Main --
 

@@ -49,7 +49,7 @@ class GUIEnvironment(phy.PhysicsEnvironment):
             obj.update_time()
             obj.move()
 
-        self._parent.after(10, self.simulate)
+        self._parent.after(1, self.simulate)
             
 # An object in the environment
 class GUIObject(phy.PhysicsObject):
