@@ -16,7 +16,7 @@ import tkinter as tk # GUI
 from tkinter import ttk # More GUI
 
 # -- Classes --
-
+    
 # The environment that an object or objects exist in
 class GUIEnvironment(phy.PhysicsEnvironment):
 
@@ -39,18 +39,25 @@ class GUIEnvironment(phy.PhysicsEnvironment):
         return(self._canvas)
 
     # Simulate the environment, overwrites the physics simulation with a graphical interpretation
-    def simulate(self, runtime, increment):
+    def simulate(self):
 
-        pass
+        for obj in self._objects:
 
+            obj.update_time()
+            obj.move()
+
+        self.increment_time(0.01)
+
+        self._parent.after(10, self.simulate)
+            
 # An object in the environment
 class GUIObject(phy.PhysicsObject):
 
     # Initialisation
-    def __init__(self, environment, shape, physics = False, mass = 0, init_velocity = phy.Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0, name = None):
+    def __init__(self, environment, physics = False, mass = 0, init_velocity = phy.Vector().from_polar(0, 0), init_position = [0, 0], acceleration_vectors = [], init_time = 0, name = None):
 
         self._environment = environment # Graphical and physical environment the object exists in
-        self._shape = shape # Holds shape of the object
+        self._shape = self._environment.canvas().create_rectangle(10, 200, 20, 210, fill = "black")
         self._physics = physics # Flag for whether the object is physics enabled or not
 
         # If physics is enabled
@@ -59,9 +66,17 @@ class GUIObject(phy.PhysicsObject):
             # Run through parent init command
             super(GUIObject, self).__init__(environment, mass, init_velocity, init_position, acceleration_vectors, init_time, name)
 
+    def move(self):
+
+        x, y = self.relative_position()
+
+        print(x)
+
+        self._environment.canvas().move(self._shape, x, -y)
+
 # -- Variables --
 
-root = tk.Tk() # Root GUI instance
+root = tk.Tk()
 
 # -- Main --
 
@@ -69,20 +84,22 @@ if(__name__ == "__main__"):
 
     # -- tk setup --
     root.title("Physics Simulation")
-    root.attributes("-fullscreen", True)
+    root.geometry("500x500+50+50")
 
     # Environment
-    e = GUIEnvironment(root, [phy.EARTH_GRAVITY], root.winfo_screenwidth(), root.winfo_screenheight(), "Room 1")
-
+    e = GUIEnvironment(root, [phy.EARTH_GRAVITY], 500, 500, "Room 1")
+    
     # Exit button
     exit_btn = ttk.Button(root, text = "Close", command = root.destroy)
     exit_btn.place(x = 10, y = 10)
 
+    # Start button
+    start_btn = ttk.Button(root, text = "Start", command = e.simulate)
+    start_btn.place(x = 10, y = 40)
+
     # Test physics enabled object
-    o = GUIObject(e, e.canvas().create_rectangle(50, 50, 60, 60, fill = "black"), True, 1, phy.Vector().from_polar(10, 45), name = "Test")
+    o = GUIObject(e, True, 1, phy.Vector().from_polar(2, 45), name = "Test")
 
-    # Begin physics simulation
-    e.simulate(10, 1)
-
-    # -- Mainloop --
     root.mainloop()
+
+    
