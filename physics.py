@@ -275,7 +275,7 @@ def xy_to_polar(x, y):
     # Get the magnitude of the resultant vector using pythagorean theorom
     magnitude = math.sqrt((x ** 2) + (y ** 2))
 
-    argument = math.degrees(math.sin(y/magnitude)) # Use trig to calculate the argument
+    argument = math.degrees(math.asin(y/magnitude)) # Use trig to calculate the argument
 
     return(magnitude, argument) # Return magnitude and argument
 
