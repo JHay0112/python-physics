@@ -57,11 +57,16 @@ class GUIEnvironment(phy.PhysicsEnvironment):
             # Collision detection
             x1, y1, x2, y2 = self._canvas.coords(obj.shape())
 
-            for col_obj in self._canvas.find_overlapping(x1, y1, x2, y2):
+            for col_shp in self._canvas.find_overlapping(x1, y1, x2, y2):
 
-                if(obj.shape() != col_obj):
+                if(obj.shape() != col_shp):
 
-                    obj.collide(self._objects[col_obj - 1])
+                    col_obj = self._objects[col_shp - 1]
+                    
+                    obj.collide(col_obj)
+                    col_obj.collide(obj)
+                    obj.reset_xy()
+                    col_obj.reset_xy()
 
         # Schedule next simulation point
         self._parent.after(10, self.simulate)
@@ -92,6 +97,11 @@ class GUIObject(phy.PhysicsObject):
 
         return(self._shape)
 
+    def reset_xy(self):
+
+        self._x = 0
+        self._y = 0
+
     # Move object
     def move(self):
 
@@ -104,6 +114,8 @@ class GUIObject(phy.PhysicsObject):
         # Add change to recorded change
         self._x += x
         self._y += y
+
+        print(f"Moved X: {x}, Y: {-y}")
 
         # Move the objects as per movement magnitudes
         # -y is because magnitudes are used opposite to how I would use them

@@ -205,6 +205,10 @@ class PhysicsObject:
 
         return(self._name)
 
+    def environment(self):
+
+        return(self._environment)
+
     def mass(self):
 
         return(self._mass)
@@ -276,7 +280,8 @@ class PhysicsObject:
         final_vel = Vector().from_xy(vel_x, vel_y)
 
         # Update own initial conditions
-        self.new_init(final_vel, self._environment.get_time(), self.global_position())
+        self.new_init(final_vel, self._environment.get_time(), list(self.global_position()))
+        col_object.new_init(final_vel, col_object.environment().get_time(), list(col_object.global_position()))
 
 # -- Functions --
 
