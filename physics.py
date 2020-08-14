@@ -140,9 +140,9 @@ class PhysicsEnvironment:
 
         return(self._time)
 
-    def add_object(self, object):
+    def add_object(self, new_object):
 
-        self._objects.append(object)
+        self._objects.append(new_object)
 
     def increment_time(self, increment):
 
@@ -158,7 +158,7 @@ class PhysicsEnvironment:
 
                 obj.update_time()
 
-                print(f"{obj.get_name()}\n(x, y): {obj.global_position()}, \n(magnitude, argument): {obj.velocity().return_polar()}\n--")
+                print(f"{obj.name()}\n(x, y): {obj.global_position()}, \n(magnitude, argument): {obj.velocity().return_polar()}\n--")
 
             self.increment_time(increment)
 
@@ -209,13 +209,11 @@ class PhysicsObject:
 
         return(self._mass)
 
-    def new_init_velocity(self, new_vel):
+    def new_init(self, new_vel, new_time, new_position):
 
         self._init_velocity = new_vel
-
-    def new_init_time(self, new_time):
-
         self._init_time = new_time
+        self._init_position = new_position
 
     # Calculate the acceleration acting on the object as a vector
     def acceleration(self):
@@ -277,9 +275,8 @@ class PhysicsObject:
 
         final_vel = Vector().from_xy(vel_x, vel_y)
 
-        # Update own velocity and init time
-        self.new_init_velocity(final_vel)
-        self.new_init_time(self._environment.get_time())
+        # Update own initial conditions
+        self.new_init(final_vel, self._environment.get_time(), self.global_position())
 
 # -- Functions --
 

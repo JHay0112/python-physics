@@ -27,6 +27,7 @@ class GUIEnvironment(phy.PhysicsEnvironment):
         self._parent = parent # Parent GUI element
         self._width = width # Width of canvas
         self._height = height # Height of canvas
+        self._shape_to_object = {}
 
         super(GUIEnvironment, self).__init__(acceleration_vectors, name) # Run through parent init command
 
@@ -42,18 +43,28 @@ class GUIEnvironment(phy.PhysicsEnvironment):
     # Simulate the environment, overwrites the physics simulation with a graphical interpretation
     def simulate(self):
 
-        self.increment_time(0.01) # Increment time
+        self.increment_time(0.1) # Increment time
 
         # For every object in the environment
         for obj in self._objects:
 
             # Update time
             obj.update_time()
+
             # Move the object
             obj.move()
 
+            # Collision detection
+            x1, y1, x2, y2 = self._canvas.coords(obj.shape())
+
+            for col_obj in self._canvas.find_overlapping(x1, y1, x2, y2):
+
+                if(obj.shape() != col_obj):
+
+                    obj.collide(self._objects[col_obj - 1])
+
         # Schedule next simulation point
-        self._parent.after(1, self.simulate)
+        self._parent.after(10, self.simulate)
             
 # An object in the environment
 class GUIObject(phy.PhysicsObject):
@@ -76,6 +87,10 @@ class GUIObject(phy.PhysicsObject):
 
             # Run through parent init command
             super(GUIObject, self).__init__(environment, mass, init_velocity, init_position, acceleration_vectors, init_time, name)
+
+    def shape(self):
+
+        return(self._shape)
 
     # Move object
     def move(self):
@@ -118,6 +133,8 @@ if(__name__ == "__main__"):
     start_btn.place(x = 10, y = 40)
 
     # Test physics enabled object
-    o = GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "black"}, True, 1, phy.Vector().from_polar(30, 70), [100, 100], name = "Test")
+    GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "black"}, True, 1, phy.Vector().from_polar(30, 70), [100, 100], name = "Test")
+
+    GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "black"}, True, 1, phy.Vector().from_polar(30, 120), [200, 100], name = "Test")
 
     root.mainloop() # GUI event loop
