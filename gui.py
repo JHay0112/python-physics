@@ -42,12 +42,12 @@ class GUIEnvironment(phy.PhysicsEnvironment):
     # Simulate the environment, overwrites the physics simulation with a graphical interpretation
     def simulate(self):
 
+        self.increment_time(0.01)
+
         for obj in self._objects:
 
             obj.update_time()
             obj.move()
-
-        self.increment_time(0.01)
 
         self._parent.after(10, self.simulate)
             
@@ -105,7 +105,7 @@ if(__name__ == "__main__"):
     start_btn.place(x = 10, y = 40)
 
     # Test physics enabled object
-    o = GUIObject(e, True, 1, phy.Vector().from_polar(30, 45), name = "Test")
+    o = GUIObject(e, True, 1, phy.Vector().from_polar(30, 70), name = "Test")
 
     root.mainloop()
 
