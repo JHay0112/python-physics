@@ -64,9 +64,7 @@ class GUIEnvironment(phy.PhysicsEnvironment):
                     col_obj = self._objects[col_shp - 1]
                     
                     obj.collide(col_obj)
-                    col_obj.collide(obj)
                     obj.reset_xy()
-                    col_obj.reset_xy()
 
         # Schedule next simulation point
         self._parent.after(10, self.simulate)

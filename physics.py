@@ -273,15 +273,10 @@ class PhysicsObject:
         self_vel_x = obj_mom_x/self.mass()
         self_vel_y = obj_mom_y/self.mass()
 
-        obj_vel_x = self_mom_x/col_object.mass()
-        obj_vel_y = self_mom_y/col_object.mass()
-
         self_final_vel = Vector().from_xy(self_vel_x, self_vel_y)
-        obj_final_vel = Vector().from_xy(obj_vel_x, obj_vel_y)
 
         # Update own initial conditions
         self.new_init(self_final_vel, self._environment.get_time(), list(self.global_position()))
-        col_object.new_init(obj_final_vel, col_object.environment().get_time(), list(col_object.global_position()))
 
 # -- Functions --
 
