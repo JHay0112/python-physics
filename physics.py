@@ -266,8 +266,7 @@ class PhysicsObject:
 
     # Collide two objects together
     def collide(self, col_object):
-
-        self_mom_x, self_mom_y = self.momentum().return_xy() # Get own momentumn in x and y
+        
         obj_mom_x, obj_mom_y = col_object.momentum().return_xy() # Get collision object momentum in x and y
 
         self_vel_x = obj_mom_x/self.mass()
