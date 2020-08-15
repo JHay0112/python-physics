@@ -145,6 +145,6 @@ if(__name__ == "__main__"):
     # Test physics enabled object
     GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "black"}, True, 1, phy.Vector().from_polar(30, 70), [100, 100], name = "Test")
 
-    GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "black"}, True, 1, phy.Vector().from_polar(30, 120), [200, 100], name = "Test")
+    GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "grey"}, True, 1, phy.Vector().from_polar(30, 120), [200, 100], name = "Test")
 
     root.mainloop() # GUI event loop
