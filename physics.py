@@ -213,9 +213,9 @@ class PhysicsObject:
 
         return(self._mass)
 
-    def new_init(self, new_vel, new_time, new_position):
+    def accelerate(self, accel, new_time, new_position):
 
-        self._init_velocity = new_vel
+        self._init_velocity.add([accel])
         self._init_time = new_time
         self._init_position = new_position
 
@@ -269,13 +269,13 @@ class PhysicsObject:
         
         obj_mom_x, obj_mom_y = col_object.momentum().return_xy() # Get collision object momentum in x and y
 
-        self_vel_x = obj_mom_x/self.mass()
-        self_vel_y = obj_mom_y/self.mass()
+        self_accel_x = obj_mom_x/self.mass()
+        self_accel_y = obj_mom_y/self.mass()
 
-        self_final_vel = Vector().from_xy(self_vel_x, self_vel_y)
+        self_accel = Vector().from_xy(self_accel_x, self_accel_y)
 
         # Update own initial conditions
-        self.new_init(self_final_vel, self._environment.get_time(), list(self.global_position()))
+        self.accelerate(self_accel, self._environment.get_time(), list(self.global_position()))
 
 # -- Functions --
 

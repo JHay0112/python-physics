@@ -51,9 +51,6 @@ class GUIEnvironment(phy.PhysicsEnvironment):
             # Update time
             obj.update_time()
 
-            # Move the object
-            obj.move()
-
             # Collision detection
             x1, y1, x2, y2 = self._canvas.coords(obj.shape())
 
@@ -63,8 +60,11 @@ class GUIEnvironment(phy.PhysicsEnvironment):
 
                     col_obj = self._objects[col_shp - 1]
                     
-                    obj.collide(col_obj)
                     obj.reset_xy()
+                    obj.collide(col_obj)
+
+            # Move the object
+            obj.move()
 
         # Schedule next simulation point
         self._parent.after(10, self.simulate)
