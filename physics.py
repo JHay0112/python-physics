@@ -269,19 +269,19 @@ class PhysicsObject:
 
         self_mom_x, self_mom_y = self.momentum().return_xy() # Get own momentumn in x and y
         obj_mom_x, obj_mom_y = col_object.momentum().return_xy() # Get collision object momentum in x and y
-        tot_mass = self.mass() + col_object.mass()
 
-        init_mom_x = self_mom_x + obj_mom_x
-        init_mom_y = self_mom_y + obj_mom_y
+        self_vel_x = obj_mom_x/self.mass()
+        self_vel_y = obj_mom_y/self.mass()
 
-        vel_x = init_mom_x/tot_mass
-        vel_y = init_mom_y/tot_mass
+        obj_vel_x = self_mom_x/col_object.mass()
+        obj_vel_y = self_mom_y/col_object.mass()
 
-        final_vel = Vector().from_xy(vel_x, vel_y)
+        self_final_vel = Vector().from_xy(self_vel_x, self_vel_y)
+        obj_final_vel = Vector().from_xy(obj_vel_x, obj_vel_y)
 
         # Update own initial conditions
-        self.new_init(final_vel, self._environment.get_time(), list(self.global_position()))
-        col_object.new_init(final_vel, col_object.environment().get_time(), list(col_object.global_position()))
+        self.new_init(self_final_vel, self._environment.get_time(), list(self.global_position()))
+        col_object.new_init(obj_final_vel, col_object.environment().get_time(), list(col_object.global_position()))
 
 # -- Functions --
 
