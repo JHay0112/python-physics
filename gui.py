@@ -61,7 +61,11 @@ class GUIEnvironment(phy.PhysicsEnvironment):
                     col_obj = self._objects[col_shp - 1]
                     
                     obj.reset_xy()
+                    self.increment_time(-0.1)
+                    obj.update_time()
                     obj.collide(col_obj)
+                    self.increment_time(0.1)
+                    obj.update_time()
 
             # Move the object
             obj.move()
