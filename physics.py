@@ -278,16 +278,25 @@ class PhysicsObject:
         mass_dif = self.mass() - col_object.mass()
         total_mass = self.mass() + col_object.mass()
 
-        vel_x, vel_y = self.velocity().return_xy()
-        obj_x, obj_y = col_object.velocity().return_xy()
+        self_v = self.velocity().magnitude()
+        obj_v = col_object.velocity().magnitude()
 
         x_sep = self.global_position()[0] - col_object.global_position()[0]
         y_sep = self.global_position()[1] - col_object.global_position()[1]
 
-        sep_angle = math.degrees(math.atan(y_sep/x_sep))
+        sep_angle = math.atan(math.radians(y_sep/x_sep))
 
-        vel_x = ((vel_x * math.degrees(math.cos(self.momentum().argument() - sep_angle)) * total_mass + (2 * col_object.mass() * obj_x * math.degrees(math.cos(col_object.momentum().argument() - sep_angle)))) / total_mass) * math.degrees(math.cos(sep_angle)) + math.degrees(math.sin(self.momentum().argument() - sep_angle)) * math.degrees(math.cos(sep_angle + math.pi/2))
-        vel_y = ((vel_x * math.degrees(math.cos(self.momentum().argument() - sep_angle)) * total_mass + (2 * col_object.mass() * obj_x * math.degrees(math.cos(col_object.momentum().argument() - sep_angle)))) / total_mass) * math.degrees(math.sin(sep_angle)) + math.degrees(math.sin(self.momentum().argument() - sep_angle)) * math.degrees(math.cos(sep_angle + math.pi/2))
+        vel_x = self_v * math.cos(math.radians(self.momentum().argument() - sep_angle)) * mass_dif
+        vel_x += 2 * col_object.mass() * obj_v * math.cos(math.radians(col_object.momentum().argument() - sep_angle))
+        vel_x /= total_mass
+        vel_x *= math.cos(math.radians(sep_angle))
+        vel_x += self_v * math.sin(math.radians(self.momentum().argument() - sep_angle)) * math.cos(math.radians(sep_angle + (math.pi / 2)))
+
+        vel_y = self_v * math.cos(math.radians(self.momentum().argument() - sep_angle)) * mass_dif
+        vel_y += 2 * col_object.mass() * obj_v * math.cos(math.radians(col_object.momentum().argument() - sep_angle))
+        vel_y /= total_mass
+        vel_y *= math.sin(math.radians(sep_angle))
+        vel_y += self_v * math.sin(math.radians(self.momentum().argument() - sep_angle)) * math.cos(math.radians(sep_angle + (math.pi / 2)))
 
         self.new_init(Vector().from_xy(vel_x, vel_y), self.environment().get_time(), self.global_position())
 
