@@ -95,6 +95,14 @@ class Vector:
 
         return(self._magnitude, self._argument) # Return the object variables
 
+    def magnitude(self):
+
+        return(self._magnitude)
+
+    def argument(self):
+
+        return(self._argument)
+
     # Add another vector object to our vector object
     def add(self, add_vectors):
 
@@ -267,16 +275,21 @@ class PhysicsObject:
     # Collide two objects together
     def collide(self, col_object):
 
-        mom_x, mom_y = self.momentum().add([col_object.momentum()]).return_xy()
-        
+        mass_dif = self.mass() - col_object.mass()
         total_mass = self.mass() + col_object.mass()
 
-        vel_x = mom_x / total_mass
-        vel_y = mom_y / total_mass
+        vel_x, vel_y = self.velocity().return_xy()
+        obj_x, obj_y = col_object.velocity().return_xy()
 
-        final_vel = Vector().from_xy(vel_x, vel_y)
+        x_sep = self.global_position()[0] - col_object.global_position()[0]
+        y_sep = self.global_position()[1] - col_object.global_position()[1]
 
-        self.new_init(final_vel, self._environment.get_time(), self.global_position())
+        sep_angle = math.degrees(math.atan(y_sep/x_sep))
+
+        vel_x = ((vel_x * math.degrees(math.cos(self.momentum().argument() - sep_angle)) * total_mass + (2 * col_object.mass() * obj_x * math.degrees(math.cos(col_object.momentum().argument() - sep_angle)))) / total_mass) * math.degrees(math.cos(sep_angle)) + math.degrees(math.sin(self.momentum().argument() - sep_angle)) * math.degrees(math.cos(sep_angle + math.pi/2))
+        vel_y = ((vel_x * math.degrees(math.cos(self.momentum().argument() - sep_angle)) * total_mass + (2 * col_object.mass() * obj_x * math.degrees(math.cos(col_object.momentum().argument() - sep_angle)))) / total_mass) * math.degrees(math.sin(sep_angle)) + math.degrees(math.sin(self.momentum().argument() - sep_angle)) * math.degrees(math.cos(sep_angle + math.pi/2))
+
+        self.new_init(Vector().from_xy(vel_x, vel_y), self.environment().get_time(), self.global_position())
 
 # -- Functions --
 

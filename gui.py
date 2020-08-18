@@ -50,6 +50,9 @@ class GUIEnvironment(phy.PhysicsEnvironment):
 
             # Update time
             obj.update_time()
+            
+            # Move the object
+            obj.move()
 
             # Collision detection
             x1, y1, x2, y2 = self._canvas.coords(obj.shape())
@@ -61,14 +64,7 @@ class GUIEnvironment(phy.PhysicsEnvironment):
                     col_obj = self._objects[col_shp - 1]
                     
                     obj.reset_xy()
-                    self.increment_time(-0.1)
-                    obj.update_time()
                     obj.collide(col_obj)
-                    self.increment_time(0.1)
-                    obj.update_time()
-
-            # Move the object
-            obj.move()
 
         # Schedule next simulation point
         self._parent.after(10, self.simulate)
@@ -117,8 +113,6 @@ class GUIObject(phy.PhysicsObject):
         self._x += x
         self._y += y
 
-        print(f"Moved X: {x}, Y: {-y}")
-
         # Move the objects as per movement magnitudes
         # -y is because magnitudes are used opposite to how I would use them
         self._environment.canvas().move(self._shape, x, -y)
@@ -151,6 +145,6 @@ if(__name__ == "__main__"):
 
     GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "grey"}, True, 1, phy.Vector().from_polar(30, 120), [200, 100], name = "Test")
 
-    GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "green"}, True, 1, phy.Vector().from_polar(30, 90), [150, 100], name = "Test")
+    #GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "green"}, True, 1, phy.Vector().from_polar(30, 90), [150, 100], name = "Test")
 
     root.mainloop() # GUI event loop
