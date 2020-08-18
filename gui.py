@@ -85,6 +85,10 @@ class GUIObject(phy.PhysicsObject):
 
             self._shape = self._environment.canvas().create_rectangle(init_position[0], init_position[1], init_position[0] + shape["width"], init_position[1] + shape["height"], fill = shape["fill"])
 
+        elif(shape["shape"] == "circle"):
+
+            self._shape = self._environment.canvas().create_oval(init_position[0] - shape["radius"], init_position[1] - shape["radius"], init_position[0] + shape["radius"], init_position[1] + shape["radius"], fill = shape["fill"])
+
         # If physics is enabled
         if(self._physics):
 
@@ -141,10 +145,10 @@ if(__name__ == "__main__"):
     start_btn.place(x = 10, y = 40)
 
     # Test physics enabled object
-    GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "black"}, True, 1, phy.Vector().from_polar(30, 70), [100, 100], name = "Test")
+    GUIObject(e, {"shape": "circle", "radius": 5, "fill": "black"}, True, 1, phy.Vector().from_polar(30, 70), [100, 100], name = "Test")
 
-    GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "grey"}, True, 1, phy.Vector().from_polar(30, 120), [200, 100], name = "Test")
+    GUIObject(e, {"shape": "circle", "radius": 5, "fill": "grey"}, True, 1, phy.Vector().from_polar(30, 120), [200, 100], name = "Test")
 
-    #GUIObject(e, {"shape": "rectangle", "width": 10, "height": 10, "fill": "green"}, True, 1, phy.Vector().from_polar(30, 90), [150, 100], name = "Test")
+    GUIObject(e, {"shape": "circle", "radius": 5, "fill": "green"}, True, 1, phy.Vector().from_polar(100, 90), [150, 400], name = "Test")
 
     root.mainloop() # GUI event loop
